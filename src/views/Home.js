@@ -7,9 +7,7 @@ import {
   Col,
   Card,
   CardBody,
-  CardFooter,
   Badge,
-  Button
 } from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
@@ -28,38 +26,6 @@ class HomePage extends React.Component {
           author: "Anna Kunis",
           authorAvatar: require("../images/avatars/1.jpg"),
           title: "Conduct at an replied removal an amongst",
-        },
-        {
-          backgroundImage: require("../images/content-management/1.jpeg"),
-          category: "Business",
-          categoryTheme: "dark",
-          author: "Anna Kunis",
-          authorAvatar: require("../images/avatars/1.jpg"),
-          title: "Conduct at an replied removal an amongst",
-        },
-        {
-          backgroundImage: require("../images/content-management/1.jpeg"),
-          category: "Business",
-          categoryTheme: "dark",
-          author: "Anna Kunis",
-          authorAvatar: require("../images/avatars/1.jpg"),
-          title: "Conduct at an replied removal an amongst",
-        },
-        {
-          backgroundImage: require("../images/content-management/2.jpeg"),
-          category: "Travel",
-          categoryTheme: "info",
-          author: "James Jamerson",
-          authorAvatar: require("../images/avatars/2.jpg"),
-          title: "Off tears are day blind smile alone had ready",
-        },
-        {
-          backgroundImage: require("../images/content-management/3.jpeg"),
-          category: "Technology",
-          categoryTheme: "royal-blue",
-          author: "Jimmy Jackson",
-          authorAvatar: require("../images/avatars/2.jpg"),
-          title: "Difficult in delivered extensive at direction",
         },
         {
           backgroundImage: require("../images/content-management/4.jpeg"),
@@ -118,11 +84,13 @@ class HomePage extends React.Component {
         {/* Row of Posts */}
         <Row>
           {PostsList.map((post, idx) => (
-            <Col lg="3" md="6" sm="12" className="mb-4" key={idx}>
+          <Col lg="3" md="6" sm="12" className="mb-4" key={idx}>
+              
             <Card small className="card-post card-post--1">
+              <a href="/products/1" className="text-fiord-blue">
               <div
                 className="card-post__image"
-                style={{ backgroundImage: `url(${post.backgroundImage})` }}
+                style={{ backgroundImage: `url(${post.backgroundImage})`, maxHeight:"600px", maxWidth: "400px"   }}
               >
                 <Badge
                   pill
@@ -132,7 +100,7 @@ class HomePage extends React.Component {
                 </Badge>
                 <div className="card-post__author d-flex">
                   <a
-                    href="#"
+                    href="/user/1"
                     className="card-post__author-avatar card-post__author-avatar--small"
                     style={{ backgroundImage: `url('${post.authorAvatar}')` }}
                   >
@@ -140,9 +108,10 @@ class HomePage extends React.Component {
                   </a>
                 </div>
               </div>
+              </a>
               <CardBody>
                 <h5 className="card-title">
-                  <a href="#" className="text-fiord-blue">
+                  <a href="/products/1" className="text-fiord-blue">
                     {post.title}
                   </a>
                 </h5>

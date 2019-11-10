@@ -235,7 +235,7 @@ $main-sidebar-dropdown-item-font-weight-retina: 300 !default;
 
 // Components -> Card Post
 $card-post-padding-x: 1.5625rem !default;
-$card-post-padding-y: 1.5625rem !default;
+$card-post-padding-y: 0.5rem !default;
 $card-post-padding: $card-post-padding-y $card-post-padding-x !default;
 
 $card-post-image-min-height: 10.3125rem !default;
@@ -252,7 +252,7 @@ $card-post-v1-author-transform: translateY(50%) !default;
 $card-post-v1-author-margin-left: 1.5625rem !default;       // 25px
 $card-post-v1-category-top: 0.9375rem !default;             // 15px
 $card-post-v1-category-right: 0.9375rem !default;           // 15px
-$card-post-v1-body-padding-top: 2.1875rem !default;         // 35px
+$card-post-v1-body-padding-top: 0.5rem !default;         // 35px
 
 $card-post-aside-v1-body-padding: $card-post-padding !default;
 $card-post-aside-v1-author-left: 0.9375rem !default;        // 15px
