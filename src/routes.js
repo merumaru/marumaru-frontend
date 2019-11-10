@@ -13,7 +13,12 @@ import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
 
-import HomePage from "./views/HomePage";
+import HomePage from "./views/Home";
+import ProductPage from "./views/Product";
+import AddProductPage from "./views/AddProduct";
+import LogInPage from "./views/LogIn";
+import EmptyLayout from "./layouts/Empty";
+import SignUpPage from "./views/SignUp";
 
 export default [
   {
@@ -21,11 +26,37 @@ export default [
     exact: true,
     layout: DefaultLayout,
     component: () => <Redirect to="/home" />
+    // change this to login
   },
   {
     path: "/home",
     layout: DefaultLayout,
     component: HomePage
+  },
+  {
+    path: "/products/:id", 
+    layout: DefaultLayout,
+    component: ProductPage
+  },
+  {
+    path: "/add-product",
+    layout: DefaultLayout,
+    component: AddProductPage
+  },
+  {
+    path: "/user/:id",
+    layout: DefaultLayout,
+    component: UserProfileLite
+  },
+  {
+    path: "/login",
+    layout: EmptyLayout,
+    component: LogInPage
+  },
+  {
+    path: "/signup",
+    layout: EmptyLayout,
+    component: SignUpPage
   },
 
   {
@@ -33,11 +64,7 @@ export default [
     layout: DefaultLayout,
     component: BlogOverview
   },
-  {
-    path: "/user-profile-lite",
-    layout: DefaultLayout,
-    component: UserProfileLite
-  },
+
   {
     path: "/add-new-post",
     layout: DefaultLayout,
