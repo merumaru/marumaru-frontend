@@ -6,7 +6,7 @@ import { DefaultLayout } from "./layouts";
 
 // Route Views
 import BlogOverview from "./views/BlogOverview";
-import UserProfileLite from "./views/UserProfileLite";
+import UserProfile from "./views/UserProfile";
 import AddNewPost from "./views/AddNewPost";
 import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
@@ -46,7 +46,7 @@ export default [
   {
     path: "/user/:id",
     layout: DefaultLayout,
-    component: UserProfileLite
+    component: UserProfile
   },
   {
     path: "/login",

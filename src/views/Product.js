@@ -19,6 +19,9 @@ import PageTitle from "../components/common/PageTitle";
 import { height, fontWeight } from "@material-ui/system";
 import RoomIcon from '@material-ui/icons/Room';
 import RangeDatePicker from "../components/common/RangeDatePicker";
+import StarIcon from '@material-ui/icons/Star';
+import StarHalfIcon from '@material-ui/icons/StarHalf';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
 
 const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
 
@@ -49,7 +52,7 @@ class ProductPage extends React.Component {
         avatar: 'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/stan-lee-arrives-at-the-premiere-of-disney-and-marvels-news-photo-950501274-1542049801.jpg?crop=1.00xw:0.512xh;0,0.0630xh&resize=480:*'
       },
       stats: {
-        label: "Views",
+        label: "Product Views",
         value: "182",
         percentage: "12.4%",
         increase: true,
@@ -99,8 +102,11 @@ class ProductPage extends React.Component {
                 </div>
               </CardHeader>
               <CardBody style={{fontWeight: "700", fontSize: "1.5rem", textAlign: "center"}}>
-                円 {product.Price}
+                円 {product.Price} <span style={{fontSize: "1rem"}}>/ day</span>
                 {/* ¥ */}
+                <span style={{float: "right", fontSize: "small"}}>
+                  <StarIcon color="primary"/><StarIcon color="primary"/><StarIcon color="primary"/><StarHalfIcon color="primary"/><StarBorderIcon color="primary"/>
+                  </span>
               </CardBody>
             </Card>
           </Col>
