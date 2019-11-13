@@ -34,7 +34,7 @@ export default [
     component: HomePage
   },
   {
-    path: "/products/:id", 
+    path: "/products/", 
     layout: DefaultLayout,
     component: ProductPage
   },
@@ -44,7 +44,7 @@ export default [
     component: AddProductPage
   },
   {
-    path: "/users/:id",
+    path: "/users/",
     layout: DefaultLayout,
     component: UserProfile
   },

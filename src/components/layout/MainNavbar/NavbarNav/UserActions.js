@@ -18,7 +18,10 @@ export default class UserActions extends React.Component {
 
     this.state = {
       visible: false,
-      username: "username",
+      user: {
+        username: "Log In",
+        avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/220px-User_icon_2.svg.png"
+      },
     };
     this.toggleUserActions = this.toggleUserActions.bind(this);
   }
@@ -28,7 +31,7 @@ export default class UserActions extends React.Component {
     axios.get(API_URL + '/users/user/' + userID)
       .then((response) => {
         console.log('username ', response.data.username);
-        this.setState({ username: response.data.username });
+        this.setState({ user: response.data });
       })
       .catch(function (error) { console.log(error); })
   }
@@ -48,14 +51,14 @@ export default class UserActions extends React.Component {
       <NavItem tag={Dropdown} caret toggle={this.toggleUserActions}>
         <DropdownToggle caret tag={NavLink} className="text-nowrap px-3">
           <img
-            className="user-avatar rounded-circle mr-2"
-            src={require("./../../../../images/avatars/0.jpg")}
+            className="user-avatar mr-2"
+            src={this.state.user.avatar}
             alt="User Avatar"
           />{" "}
-          <span className="d-none d-md-inline-block">{this.state.username}</span>
+          <span className="d-none d-md-inline-block">{this.state.user.username}</span>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} right small open={this.state.visible}>
-          <DropdownItem tag={Link} to="user-profile">
+          <DropdownItem tag={Link} to={"/users/" + this.state.user.ID}>
             <i className="material-icons">&#xE7FD;</i> Profile
           </DropdownItem>
           <DropdownItem tag={Link} to="edit-user-profile">

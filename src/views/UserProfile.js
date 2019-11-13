@@ -13,9 +13,19 @@ import RoomIcon from '@material-ui/icons/Room';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import StorefrontIcon from '@material-ui/icons/Storefront';
+import axios from "axios";
+import { API_URL } from "../config";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var today = new Date();
+var defaultOrders = [{
+  ID: "99",
+  SellerID: "1",
+  BuyerID: "2",
+  ProductID: "3",
+  TimeDuration: { Start: "2019-11-03T08:04:33+0900", End: "2019-11-30T17:03:30+0900" },
+  isCancelled: false
+}];
 
 function getReadableDate(isoDate) {
   var date = new Date(isoDate);
@@ -23,30 +33,33 @@ function getReadableDate(isoDate) {
 };
 
 function getOrderStatus(order) {
-  var end = new Date(order.TimeDuration.End)
-  if(order.isCancelled) {
+  var end = new Date(order.timeduration.End)
+  if (order.isCancelled) {
     return ["Cancelled", "bg-danger"];
   }
   else if (end < today) {
     return ["Completed", "bg-success"];
   }
-  else if(end > today) {
+  else if (end > today) {
     return ["Rented", "bg-warning"];
   }
   return ["-1", "bg-dark"];
 }
 
 function getProductStatus(product, orders) {
+  if (orders === defaultOrders || orders == null) {
+    return ["Available", "bg-success"];
+  }
   // get orders with this product id, and then choose the latest one
-  var matchingOrders= orders.filter(x => x.ProductID === product.ID)
-  var latestOrder = matchingOrders.sort((a, b)=> new Date(b.TimeDuration.start) - new Date(a.TimeDuration.start))[0]
+  var matchingOrders = orders.filter(x => x.ProductID === product.ID)
+  var latestOrder = matchingOrders.sort((a, b) => new Date(b.timeduration.start) - new Date(a.timeduration.start))[0]
 
-  if(!latestOrder || latestOrder.isCancelled) {
+  if (!latestOrder || latestOrder.isCancelled) {
     // no order, or last order cancelled
     return ["Available", "bg-success"];
   }
-  var endDate = new Date(latestOrder.TimeDuration.End)
-  if(endDate > today) {
+  var endDate = new Date(latestOrder.timeduration.End)
+  if (endDate > today) {
     return ["Rented", "bg-warning"];
   }
   return ["-1", "bg-dark"];
@@ -58,50 +71,96 @@ class UserProfile extends React.Component {
 
     this.state = {
       user: {
-        Name: "Stan Lee",
-        id: "1",
-        Address: "In your heart",
-        Email: "stantheman@gmail.com",
-        Phone: "911",
+        name: "Stan Lee",
+        ID: "1",
+        address: "In your heart",
+        email: "stantheman@gmail.com",
+        phonenumber: "911",
         avatar: 'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/stan-lee-arrives-at-the-premiere-of-disney-and-marvels-news-photo-950501274-1542049801.jpg?crop=1.00xw:0.512xh;0,0.0630xh&resize=480:*'
       },
       products: [
-        {
-          Name: "Marimekko Puketti Tote Bag",
-          ID: "1",
-          Photos: ['https://static.mercdn.net/item/detail/orig/photos/m58195644191_1.jpg?1573368650'],
-          Description: "It is a tote bag purchased 4-5 years ago. It is a bag that was used only for going to yoga for about half a year. Vertical 32 ㎝ Horizontal 44 ㎝ Town width 13 フ ァ ス ナ ー Opening fastener One inside pocket for half a year, and then purchase it with a person who understands that it was stored at home. I will ship as compact as possible. Please acknowledge m (_ _) m. I will change the amount of money while watching the situation.",
-          Price: 123.45,
-          Tags: ["Bags", "Fashion"],
-          TimeDuration: { Start: "2019-11-03T08:04:33+0900", End: "2019-11-30T17:03:30+0900" }
-          // https://timestampgenerator.com/1572562929/+09:00
-          // run a check for availability once
-        },
       ],
-      orders: [
-        {
-          ID: "99",
-          SellerID: "1",
-          BuyerID: "2",
-          ProductID: "3",
-          TimeDuration: { Start: "2019-11-03T08:04:33+0900", End: "2019-11-30T17:03:30+0900" },
-          isCancelled: false
-        },
-      ]
+      orders: [],
+      orderproducts: [],
+      userID: this.props.match.params.id || localStorage.getItem("userID")
     };
+  }
+
+
+  getUserProfile() {
+
+    console.log('Fetching information for id', this.state.userID);
+    axios.get(API_URL + '/users/user/' + this.state.userID)
+      .then((response) => {
+        console.log('user info', response);
+        this.setState({ user: response.data });
+
+        // get orders with user involved
+        axios.get(API_URL + '/orders-user/' + this.state.userID)
+          .then((response) => {
+            console.log('Populating orders for', this.state.userID, response.data);
+            if (response.data) {
+              this.setState({ orders: response.data });
+
+              // get product details
+              var orderproducts = [];
+              var length = this.state.orders.length;
+              this.state.orders.map((order, key) =>
+                axios.get(API_URL + '/products/' + order.productID)
+                  .then((resp) => {
+                    console.log('Product received', resp.data);
+                    length--;
+                    if (resp.data) {
+                      orderproducts.push(resp.data);
+                      // this.setState({orderproducts: this.state.orderproducts.push(resp.data)});
+                    }
+                    else {
+                      console.log(key, ' number of order', response);
+                    }
+                    // if (length === 0) {
+                    //   this.setState({ orderproducts: orderproducts });
+                    //   console.log('Orderproducts', this.state.orderproducts);
+                    // }
+                  })
+                  .catch(function (error) { console.log('products fet', error.response); })
+              );
+
+              this.setState({ orderproducts: orderproducts });
+            }
+          })
+          .catch(function (error) { console.log(error.response); })
+      })
+      .catch(function (error) { console.log('user fetch', error.response); });
+
+
+    // get user products
+    axios.get(API_URL + '/products-user/' + this.state.userID)
+      .then((response) => {
+        console.log('Products', response.data);
+        if (response.data) {
+          this.setState({ products: response.data });
+        }
+      })
+      .catch(function (error) { console.log('products fet', error.response); });
+
+  }
+
+  componentDidMount() {
+    this.getUserProfile();
   }
 
   render() {
     const {
       user,
       products,
-      orders
+      orders,
+      orderproducts
     } = this.state;
 
     return (
       <Container fluid className="main-content-container px-4">
         <Row noGutters className="page-header py-4">
-          <PageTitle title={user.Name} subtitle="User Profile" md="12" className="ml-sm-auto mr-sm-auto" />
+          <PageTitle title={user.username} subtitle="User Profile" md="12" className="ml-sm-auto mr-sm-auto" />
         </Row>
         <Row>
           {/* User info */}
@@ -111,21 +170,21 @@ class UserProfile extends React.Component {
                 <div className="mb-3 mx-auto">
                   <img
                     src={user.avatar}
-                    alt={user.Name}
+                    alt={user.name}
                     width="175"
                   />
                 </div>
-                <h4 className="mb-0">{user.Name}</h4>
+                <h4 className="mb-0">{user.username}</h4>
               </CardHeader>
               <ListGroup flush>
                 <ListGroupItem className="px-4">
-                  <EmailIcon />: {user.Email}
+                  <EmailIcon />: {user.email}
                 </ListGroupItem>
                 <ListGroupItem className="px-4">
-                  <RoomIcon />: {user.Address}
+                  <RoomIcon />: {user.address}
                 </ListGroupItem>
                 <ListGroupItem className="px-4">
-                  <PhoneIcon />: {user.Phone}
+                  <PhoneIcon />: {user.phonenumber}
                 </ListGroupItem>
               </ListGroup>
             </Card>
@@ -149,23 +208,23 @@ class UserProfile extends React.Component {
                   <Row>
 
                     <Col lg="2">
-                      <a href={"/product/" + product.ID}>
-                        <img src={product.Photos} style={{ width: "50px", height: "50px" }} />
+                      <a href={"/products/" + product.ID}>
+                        <img src={product.photos[0]} style={{ width: "50px", height: "50px" }} />
                       </a>
                     </Col>
                     <Col lg="5">
-                      <a href={"/product/" + product.ID}>
-                        {product.Name}
-                        </a>
+                      <a href={"/products/" + product.ID}>
+                        {product.name}
+                      </a>
                     </Col>
                     <Col lg="3">
-                      {getReadableDate(product.TimeDuration.Start)} - {getReadableDate(product.TimeDuration.End)}
+                      {getReadableDate(product.timeduration.Start)} - {getReadableDate(product.timeduration.End)}
                     </Col>
                     <Col lg="2">
                       <Badge className={getProductStatus(product, orders)[1]}>
                         {getProductStatus(product, orders)[0]}
                       </Badge>
-                  </Col>
+                    </Col>
                   </Row>
                 </ListGroupItem>)}
               </ListGroup>
@@ -186,27 +245,28 @@ class UserProfile extends React.Component {
                     <Col lg="2">Status</Col>
                   </Row>
                 </ListGroupItem>
-                {orders.map((order) => <ListGroupItem>
+                <ListGroupItem>{orderproducts}</ListGroupItem>
+                {/* {orderproducts.map((product) => <ListGroupItem>
                   <Row>
 
                     <Col lg="2">
-                      <a href={"/product/" + order.ProductID}>
-                        <img src={order.Photos} style={{ width: "50px", height: "50px" }} />
+                      <a href={"/products/" + product.ID}>
+                        <img src={product.photos[0]} style={{ width: "50px", height: "50px" }} />
                       </a>
                     </Col>
                     <Col lg="5">
-                      <a href={"/product/" + order.ID}>
-                        {order.Name} NAME
+                      <a href={"/products/" + product.ID}>
+                        {product.name} NAME
                         </a>
                     </Col>
                     <Col lg="3">
-                      {getReadableDate(order.TimeDuration.Start)} - {getReadableDate(order.TimeDuration.End)}
+                      {getReadableDate(product.timeduration.Start)} - {getReadableDate(product.timeduration.End)}
                     </Col>
                     <Col lg="2">
-                      <Badge className={getOrderStatus(order)[1]}>{getOrderStatus(order)[0]}</Badge>
-                  </Col>
+                      <Badge className={getOrderStatus(product)[1]}>{getOrderStatus(product)[0]}</Badge>
+                    </Col>
                   </Row>
-                </ListGroupItem>)}
+                </ListGroupItem>)} */}
               </ListGroup>
             </Card>
           </Col>

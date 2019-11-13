@@ -185,7 +185,7 @@ class AddProductPage extends React.Component {
                           <RangeDatePicker ref={(ref) => this.datepicker = ref} />
                         </Col>
                         <Col md="6">
-                          <label htmlFor="price">Price * (required)</label>
+                          <label htmlFor="price">Price per day * (required)</label>
                           <FormInput
                             id="price" name="price"
                             required
