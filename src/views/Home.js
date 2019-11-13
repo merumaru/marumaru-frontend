@@ -9,6 +9,8 @@ import {
   CardBody,
   Badge,
 } from "shards-react";
+import axios from "axios";
+import { API_URL } from "../config";
 
 import PageTitle from "../components/common/PageTitle";
 
@@ -19,22 +21,6 @@ class HomePage extends React.Component {
     this.state = {
       // Product List
       PostsList: [
-        {
-          backgroundImage: require("../images/content-management/1.jpeg"),
-          category: "Business",
-          categoryTheme: "dark",
-          author: "Anna Kunis",
-          authorAvatar: require("../images/avatars/1.jpg"),
-          title: "Conduct at an replied removal an amongst",
-        },
-        {
-          backgroundImage: require("../images/content-management/4.jpeg"),
-          category: "Business",
-          categoryTheme: "warning",
-          author: "John James",
-          authorAvatar: require("../images/avatars/3.jpg"),
-          title: "It so numerous if he may outlived disposal",
-        }
       ],
 
       // Seller list
@@ -68,6 +54,19 @@ class HomePage extends React.Component {
     };
   }
 
+  getAllProducts() {
+    axios.get(API_URL + '/products')
+      .then((response) => {
+        console.log('Populating products', response.data[0]);
+        this.setState({ PostsList: response.data });
+      })
+      .catch(function (error) { console.log(error.response); })
+  }
+
+  componentDidMount() {
+    this.getAllProducts();
+  }
+
   render() {
     const {
       PostsList,
@@ -80,44 +79,45 @@ class HomePage extends React.Component {
         <Row noGutters className="page-header py-4">
           <PageTitle sm="4" title="Products you might be interested in" subtitle="Home" className="text-sm-left" />
         </Row>
-
+        <a href="/add-product">List your own product!</a>
+        <div style={{margin: "50px"}}></div>
         {/* Row of Posts */}
         <Row>
           {PostsList.map((post, idx) => (
-          <Col lg="3" md="6" sm="12" className="mb-4" key={idx}>
-              
-            <Card small className="card-post card-post--1">
-              <a href="/products/1" className="text-fiord-blue">
-              <div
-                className="card-post__image"
-                style={{ backgroundImage: `url(${post.backgroundImage})`, maxHeight:"600px", maxWidth: "400px"   }}
-              >
-                <Badge
-                  pill
-                  className={`card-post__category bg-${post.categoryTheme}`}
-                >
-                  {post.category}
-                </Badge>
-                <div className="card-post__author d-flex">
-                  <a
-                    href="/user/1"
-                    className="card-post__author-avatar card-post__author-avatar--small"
-                    style={{ backgroundImage: `url('${post.authorAvatar}')` }}
+            <Col lg="3" md="6" sm="12" className="mb-4" key={idx}>
+
+              <Card small className="card-post card-post--1">
+                <a href={"/products/" + post.ID} className="text-fiord-blue">
+                  <div
+                    className="card-post__image"
+                    style={{ backgroundImage: `url(${post.photos[0]})`, maxHeight: "600px", maxWidth: "400px" }}
                   >
-                    Written by {post.author}
-                  </a>
-                </div>
-              </div>
-              </a>
-              <CardBody>
-                <h5 className="card-title">
-                  <a href="/products/1" className="text-fiord-blue">
-                    {post.title}
-                  </a>
-                </h5>
-              </CardBody>
-            </Card>
-          </Col>
+                    <div style={{ float: "right", width: "50px" }}>
+                      {post.tags.map((item) => <Badge
+                        pill
+                        className={`card-post__category`} style={{ marginTop: "5px", float: "right" }}
+                      >{item}</Badge>)}
+                    </div>
+
+                    <div className="card-post__author d-flex">
+                      <a href={"/users/" + post.userID}
+                        className="card-post__author-avatar card-post__author-avatar--small"
+                        style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLrQHtPebM6OmkYCp6kyp1nHURBXZKee55KS6s96-dF8HRsdJIZQ&s')` }}
+                      >
+                      </a>
+                    </div>
+                  </div>
+                </a>
+                <CardBody>
+                  <h5 className="card-title">
+                    <a href={"/products/" + post.ID} className="text-fiord-blue">
+                      {post.name}
+                    </a>
+                    <span className="text-muted" style={{ float: "right" }}>¥ {post.price}</span>
+                  </h5>
+                </CardBody>
+              </Card>
+            </Col>
           ))}
         </Row>
 
@@ -132,28 +132,27 @@ class HomePage extends React.Component {
                 >
                   <Badge
                     pill
-                    className={`card-post__category bg-${post.categoryTheme}`}
+                    className={`card-post__category`}
                   >
-                    {post.category}
+                    {post.tags}
                   </Badge>
                   <div className="card-post__author d-flex">
                     <a
                       href="#"
                       className="card-post__author-avatar card-post__author-avatar--small"
-                      style={{ backgroundImage: `url('${post.authorAvatar}')` }}
+                      style={{ backgroundImage: `url('${post.Avatar}')` }}
                     >
-                      Written by Anna Ken
                     </a>
                   </div>
                 </div>
                 <CardBody>
                   <h5 className="card-title">
                     <a className="text-fiord-blue" href="#">
-                      {post.title}
+                      {post.Name}
                     </a>
                   </h5>
                   <p className="card-text d-inline-block mb-3">{post.body}</p>
-                  <span className="text-muted">{post.date}</span>
+                  <span className="text-muted">{post.tim}</span>
                 </CardBody>
               </Card>
             </Col>

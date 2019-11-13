@@ -1,5 +1,5 @@
 export default function() {
-  return [
+  const options = [
     {
       title: "Home", 
       to: "/home",
@@ -56,6 +56,29 @@ export default function() {
     {
       title: "Errors",
       htmlBefore: '<i class="material-icons">error</i>',
+      to: "/errors",
+    }
+  ];
+
+  return [    {
+      title: "Home", 
+      to: "/home",
+      htmlBefore: '<i class="material-icons">explore</i>',
+      htmlAfter: ""
+    },
+    {
+      title: "Add New Product",
+      htmlBefore: '<i class="material-icons">note_add</i>',
+      to: "/add-product",
+    },
+    {
+      title: "User Profile",
+      htmlBefore: '<i class="material-icons">person</i>',
+      to: "/users/",
+    },
+    {
+      title: "Filter",
+      htmlBefore: '<i class="material-icons">sort_by_alpha</i>',
       to: "/errors",
     }
   ];
