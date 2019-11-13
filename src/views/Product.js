@@ -6,17 +6,12 @@ import {
   ListGroup,
   ListGroupItem,
   Form,
-  FormGroup,
-  FormInput,
-  FormSelect,
-  FormTextarea,
   Button,
   CardBody
 } from "shards-react";
 
 import SmallStats from "../components/common/SmallStats";
 import PageTitle from "../components/common/PageTitle";
-import { height, fontWeight } from "@material-ui/system";
 import RoomIcon from '@material-ui/icons/Room';
 import RangeDatePicker from "../components/common/RangeDatePicker";
 import StarIcon from '@material-ui/icons/Star';
@@ -87,7 +82,7 @@ class ProductPage extends React.Component {
         <Row>
           {/* Photos & Price*/}
           <Col lg="5">
-            <Card large>
+            <Card>
               <CardHeader className="text-center border-bottom">
                 <div
                   className="card-post__image"

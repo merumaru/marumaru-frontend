@@ -9,16 +9,32 @@ import {
   NavItem,
   NavLink
 } from "shards-react";
+import axios from "axios";
+import { API_URL } from "../../../../config";
 
 export default class UserActions extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      visible: false
+      visible: false,
+      username: "username",
     };
-
     this.toggleUserActions = this.toggleUserActions.bind(this);
+  }
+
+  getUser() {
+    var userID = localStorage.getItem("userID");
+    axios.get(API_URL + '/users/user/' + userID)
+      .then((response) => {
+        console.log('username ', response.data.username);
+        this.setState({ username: response.data.username });
+      })
+      .catch(function (error) { console.log(error); })
+  }
+
+  componentDidMount() {
+    this.getUser();
   }
 
   toggleUserActions() {
@@ -36,7 +52,7 @@ export default class UserActions extends React.Component {
             src={require("./../../../../images/avatars/0.jpg")}
             alt="User Avatar"
           />{" "}
-          <span className="d-none d-md-inline-block">Sierra Brooks</span>
+          <span className="d-none d-md-inline-block">{this.state.username}</span>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} right small open={this.state.visible}>
           <DropdownItem tag={Link} to="user-profile">
