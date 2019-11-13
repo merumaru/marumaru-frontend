@@ -8,7 +8,7 @@ export default function() {
     },
     {
       title: "Product Details", 
-      to: "/products/1",
+      to: "/products/:id",
       htmlBefore: '<i class="material-icons">description</i>',
       htmlAfter: ""
     },
@@ -20,7 +20,7 @@ export default function() {
     {
       title: "User Profile",
       htmlBefore: '<i class="material-icons">person</i>',
-      to: "/user/:id",
+      to: "/users/:id",
     },
     {
       title: ".",

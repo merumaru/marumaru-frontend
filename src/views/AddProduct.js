@@ -1,63 +1,131 @@
 import React from "react";
 import {
   Container, Row, Col, Card,
-  CardHeader,
-  Badge,
-  ListGroup,
-  ListGroupItem,
   Form,
   FormGroup,
   FormInput,
-  FormCheckbox,
-  FormSelect,
   FormTextarea,
   Button,
-  CardBody
+  CardBody,
+  Alert
 } from "shards-react";
-
+import axios from "axios";
 import PageTitle from "../components/common/PageTitle";
-import Editor from "../components/add-new-post/Editor";
-import SidebarActions from "../components/add-new-post/SidebarActions";
-import SidebarCategories from "../components/add-new-post/SidebarCategories";
 import RangeDatePicker from "../components/common/RangeDatePicker";
+import { API_URL } from "../config";
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function isImageUrl(url) {
+  // add checks for online compatibility
+  return (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
 
-function getReadableDate(isoDate) {
-  var date = new Date(isoDate);
-  return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();//prints expected format.
-};
+function isPositiveFloat(s) {
+  return !isNaN(s) && Number(s) > 0;
+}
 
 class AddProductPage extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      product: []
-    };
+      name: "",
+      photo: "",
+      tags: "",
+      description: "",
+      price: "",
+      startdate: undefined,
+      enddate: undefined,
+      alertmsg: ""
+    }
+    this.datepicker = undefined;
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log(this.state);
+    console.log('dates', this.datepicker.state);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+  
+    // validation checks
+    if (this.state.name === "" || this.state.photo === "" ||
+      this.state.price === "") {
+      this.setState({ alertmsg: "Need to fill required inputs!" });
+    }
+    // check if valid image
+    else if (!isImageUrl(this.state.photo)) {
+      this.setState({ alertmsg: "Provide valid image url!" });
+    }
+    // date checks
+    else if (this.datepicker === undefined ||
+      this.datepicker.state.startDate === undefined || this.datepicker.state.endDate === undefined) {
+      this.setState({ alertmsg: "Choose valid dates !"});
+    }
+    else if(this.datepicker.state.startDate  > this.datepicker.state.endDate) {
+      this.setState({ alertmsg: "Start date must be before end date!"});
+    }
+    else if(this.datepicker.state.startDate < today ||
+        this.datepicker.state.endDate < today) {
+          this.setState({ alertmsg: "Dates cannot be before today!"});
+        }
+
+    // price check
+    else if(!isPositiveFloat(this.state.price)) {
+      this.setState({ alertmsg: "Price needs to be a positive number!"});
+    }
+
+    else{
+      console.log('Attempting to make product');
+      var timeduration = {Start: this.datepicker.state.startDate, End: this.datepicker.state.endDate};
+
+      axios.post(API_URL + '/products', {
+        userID: localStorage.getItem('userID'),
+        name: this.state.name,
+        photos: [this.state.photo],
+        tags: this.state.tags.split(","),
+        description: this.state.description,
+        timeduration: timeduration,
+        price: Number(this.state.price)
+      })
+        .then((response) => {
+          console.log(response.data);
+          this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
+          setTimeout(() => {
+            this.props.history.push("/products/" + response.data.info)
+          }, 2500);
+        })
+        .catch((error) => {
+          console.log(error.response);
+          this.setState({ alertmsg: error.response.data.message });
+        });
+    }
+  }
+
+  onChange(item) {
+    this.setState({ [item.target.name]: item.target.value });
+    // console.log( item.target.name, 'is', this.state[item.target.name]);
   }
 
   render() {
-    const {
-      product,
-    } = this.state;
 
     return (
       <Container fluid className="main-content-container px-4">
+        {this.state.alertmsg && <Alert className="mb-0" id="alertmsg">{this.state.alertmsg}</Alert>}
+
         <Row noGutters className="page-header py-4">
           <PageTitle title="Add New Product" subtitle="Product Details" md="12" className="ml-sm-auto mr-sm-auto" />
         </Row>
         <Row>
           <Col lg="1"></Col>
           <Col lg="10">
-            <Card large>
+            <Card>
               <CardBody>
                 {/* Description and availability */}
                 <Row>
                   <Col>
                     <Form>
                       <Row>
-                        <Col md="4">
+                        {/* <Col md="4">
                           <div className="custom-file mb-3" style={{float:"left"}}>
                             <input type="file" className="custom-file-input" id="photoFile" />
                             <label className="custom-file-label" htmlFor="photoFile">Choose file...</label>
@@ -65,25 +133,40 @@ class AddProductPage extends React.Component {
                         </Col>
                         <Col md="2">
                         <Button type="submit" style={{ float: "left" }}>Upload !</Button>
+                        </Col> */}
+                        <Col md="6" className="form-group">
+                          <label htmlFor="name">Name * (required)</label>
+                          <FormInput
+                            required
+                            id="name" name="name"
+                            onChange={this.onChange}
+                            placeholder="Name of product"
+                          />
                         </Col>
                         <Col md="3">
-                          <Button type="submit" style={{ float: "right" }}>Create !</Button>
+                          <Button type="submit"
+                            onClick={this.handleSubmit}
+                            style={{ float: "right" }}>Create !</Button>
                         </Col>
                       </Row>
                       <br />
                       <br />
                       <Row form>
                         <Col md="6" className="form-group">
-                          <label htmlFor="feName">Name</label>
+                          <label htmlFor="feUrl">File URL * (required)</label>
                           <FormInput
-                            id="feName"
-                            placeholder="Name of product"
+                            required
+                            id="photo" name="photo"
+                            onChange={this.onChange}
+                            placeholder="http://link.net"
                           />
+
                         </Col>
                         <Col md="6">
-                          <label htmlFor="feTags">Tags</label>
+                          <label htmlFor="tags">Tags</label>
                           <FormInput
-                            id="feTags"
+                            id="tags" name="tags"
+                            onChange={this.onChange}
                             placeholder="Enter comma separated tags for your product"
                           />
                         </Col>
@@ -91,19 +174,22 @@ class AddProductPage extends React.Component {
 
                       <FormGroup>
                         <label htmlFor="feDescription">Description</label>
-                        <FormTextarea id="feDescription"
+                        <FormTextarea id="description" name="description"
+                          onChange={this.onChange}
                           rows="5" placeholder="Enter size, condition, other details here" />
                       </FormGroup>
 
                       <Row form>
                         <Col md="6" className="form-group">
                           <label htmlFor="feAvailability">Availability</label>
-                          <RangeDatePicker />
+                          <RangeDatePicker ref={(ref) => this.datepicker = ref} />
                         </Col>
                         <Col md="6">
-                          <label htmlFor="fePrice">Price</label>
+                          <label htmlFor="price">Price * (required)</label>
                           <FormInput
-                            id="fePrice"
+                            id="price" name="price"
+                            required
+                            onChange={this.onChange}
                             placeholder="¥ 99.9"
                           />
                         </Col>

@@ -23,7 +23,6 @@ function getReadableDate(isoDate) {
 };
 
 function getOrderStatus(order) {
-  var start = new Date(order.TimeDuration.start)
   var end = new Date(order.TimeDuration.End)
   if(order.isCancelled) {
     return ["Cancelled", "bg-danger"];

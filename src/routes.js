@@ -25,7 +25,7 @@ export default [
     path: "/",
     exact: true,
     layout: DefaultLayout,
-    component: () => <Redirect to="/home" />
+    component: () => <Redirect to="/login" />
     // change this to login
   },
   {
@@ -44,7 +44,7 @@ export default [
     component: AddProductPage
   },
   {
-    path: "/user/:id",
+    path: "/users/:id",
     layout: DefaultLayout,
     component: UserProfile
   },

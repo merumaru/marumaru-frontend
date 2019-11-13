@@ -12,6 +12,10 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { API_URL } from "../config";
+import axios from "axios";
+import { Alert}  from "shards-react";
+// import Cookies from 'js-cookie';
 
 function Copyright() {
   return (
@@ -57,12 +61,35 @@ const useStyles = makeStyles(theme => ({
 
 export default function LogInPage() {
   const classes = useStyles();
+  var message = "";
+  function handleSubmit(event) {
+    event.preventDefault();
+    const data = new FormData(event.target);
+    console.log(data.get('username'), data.get('password'));
+    axios.post(API_URL + '/users/login', {
+      username: data.get('username'),
+      password: data.get('password'),
+      withCredentials: true
+    })
+      .then(function (response) {
+        console.log('Login successful');
+        console.log(response);
+        localStorage.setItem("userID", response.data.info);
+        window.location = "/home";
+      })
+      .catch(function (error) {
+        message = error.response.data;
+        document.getElementById("alertmsg").innerHTML = message;
+        console.log(error.response.data);
+      });
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+      <Alert className="mb-0" id="alertmsg"></Alert>
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
@@ -70,16 +97,16 @@ export default function LogInPage() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} noValidate onSubmit={handleSubmit}>
             <TextField
               variant="outlined"
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
               autoFocus
             />
             <TextField

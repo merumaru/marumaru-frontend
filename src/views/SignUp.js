@@ -10,6 +10,9 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { API_URL } from "../config";
+import axios from "axios";
+import { Alert } from "shards-react";
 
 function Copyright() {
   return (
@@ -53,14 +56,52 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+
 export default function SignUpPage() {
   const classes = useStyles();
+
+  var message = "";
+  function handleSubmit(event) {
+    event.preventDefault();
+    const data = new FormData(event.target);
+
+    axios.post(API_URL + '/users/signup', {
+      username: data.get('username'),
+      email: data.get('email'),
+      address: data.get('address'),
+      phonenumber: data.get('phone'),
+      password: data.get('password')
+    })
+      .then(function (response) {
+        console.log(response.headers);
+        axios.post(API_URL + '/users/login', {
+          username: data.get('username'),
+          password: data.get('password')
+        })
+          .then(function (resp) {
+            console.log('Logged in');
+            console.log(resp);
+            localStorage.setItem("userID", resp.data.info);
+            window.location = "/home";
+          })
+          .catch(function (err) {
+            console.log('Signed up but error');
+            console.log(err);
+          });
+      })
+      .catch(function (error) {
+        message = error.response.data;
+        document.getElementById("alertmsg").innerHTML = message;
+        console.log(error.response.data);
+      });
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Alert className="mb-0" id="alertmsg"></Alert>
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
@@ -68,16 +109,16 @@ export default function SignUpPage() {
           <Typography component="h1" variant="h5">
             Sign up for exciting products !
           </Typography>
-          <form className={classes.form} noValidate>
-          <TextField
+          <form className={classes.form} noValidate onSubmit={handleSubmit}>
+            <TextField
               variant="outlined"
               margin="normal"
               required
               fullWidth
-              id="name"
-              label="Name"
-              name="name"
-              autoComplete="name"
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
               autoFocus
             />
             {/* name, phone, email, password, address, role (we decide this) */}
@@ -95,7 +136,6 @@ export default function SignUpPage() {
             <TextField
               variant="outlined"
               margin="normal"
-              required
               fullWidth
               id="phone"
               label="Phone number"
@@ -106,7 +146,6 @@ export default function SignUpPage() {
             <TextField
               variant="outlined"
               margin="normal"
-              required
               fullWidth
               id="address"
               label="Address"
