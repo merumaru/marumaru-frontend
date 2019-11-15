@@ -24,7 +24,6 @@ const BlogOverview = ({ smallStats }) => (
           <SmallStats
             id={`small-stats-${idx}`}
             variation="1"
-            chartData={stats.datasets}
             chartLabels={stats.chartLabels}
             label={stats.label}
             value={stats.value}

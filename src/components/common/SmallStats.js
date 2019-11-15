@@ -178,10 +178,6 @@ SmallStats.propTypes = {
    */
   chartOptions: PropTypes.object,
   /**
-   * The chart data.
-   */
-  chartData: PropTypes.array.isRequired,
-  /**
    * The chart labels.
    */
   chartLabels: PropTypes.array
@@ -194,7 +190,6 @@ SmallStats.defaultProps = {
   label: "Label",
   chartOptions: Object.create(null),
   chartConfig: Object.create(null),
-  chartData: [],
   chartLabels: []
 };
 
