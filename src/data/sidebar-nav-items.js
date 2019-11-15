@@ -75,11 +75,6 @@ export default function() {
       title: "User Profile",
       htmlBefore: '<i class="material-icons">person</i>',
       to: "/users/",
-    },
-    {
-      title: "Filter",
-      htmlBefore: '<i class="material-icons">sort_by_alpha</i>',
-      to: "/errors",
     }
   ];
 }
