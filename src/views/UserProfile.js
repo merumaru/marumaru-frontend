@@ -90,13 +90,13 @@ class UserProfile extends React.Component {
   getUserProfile() {
 
     console.log('Fetching information for id', this.state.userID);
-    axios.get(API_URL + '/users/user/' + this.state.userID)
+    axios.get(API_URL + '/users/' + this.state.userID)
       .then((response) => {
         console.log('user info', response);
         this.setState({ user: response.data });
 
         // get orders with user involved
-        axios.get(API_URL + '/orders-user/' + this.state.userID)
+        axios.get(API_URL + '/users/' + this.state.userID + '/orders')
           .then((response) => {
             console.log('Populating orders for', this.state.userID, response.data);
             if (response.data) {
@@ -134,7 +134,7 @@ class UserProfile extends React.Component {
 
 
     // get user products
-    axios.get(API_URL + '/products-user/' + this.state.userID)
+    axios.get(API_URL + '/users/' + this.state.userID + '/products')
       .then((response) => {
         console.log('Products', response.data);
         if (response.data) {

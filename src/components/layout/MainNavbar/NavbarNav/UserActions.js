@@ -28,7 +28,7 @@ export default class UserActions extends React.Component {
 
   getUser() {
     var userID = localStorage.getItem("userID");
-    axios.get(API_URL + '/users/user/' + userID)
+    axios.get(API_URL + '/users/' + userID)
       .then((response) => {
         console.log('username ', response.data.username);
         this.setState({ user: response.data });

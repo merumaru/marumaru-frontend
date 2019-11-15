@@ -79,7 +79,7 @@ class HomePage extends React.Component {
         <Row noGutters className="page-header py-4">
           <PageTitle sm="4" title="Products you might be interested in" subtitle="Home" className="text-sm-left" />
         </Row>
-        <a href="/add-product">List your own product!</a>
+        <a href="/add-product">List your own product!</a>// TODO: we do not have add product?
         <div style={{margin: "50px"}}></div>
         {/* Row of Posts */}
         <Row>

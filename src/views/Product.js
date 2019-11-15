@@ -80,7 +80,7 @@ class ProductPage extends React.Component {
         console.log('response', response);
         this.setState({ product: response.data });
         this.setState({ estimate: this.state.product.price});
-        axios.get(API_URL + '/users/user/' + this.state.product.userID)
+        axios.get(API_URL + '/users/' + this.state.product.userID)
         .then((response) => {
           console.log('Seller', response.data);
           this.setState({ seller: response.data });
@@ -204,7 +204,7 @@ class ProductPage extends React.Component {
                   {/* Edit button only visible to seller */}
                   {/* <Button theme="accent">Update Account</Button> */}
                 </ListGroupItem>
-                
+
                 {/* Buying options */}
                 <ListGroupItem>
                   <Row>
