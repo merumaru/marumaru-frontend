@@ -14,11 +14,6 @@ import PageTitle from "../components/common/PageTitle";
 import RangeDatePicker from "../components/common/RangeDatePicker";
 import { API_URL } from "../config";
 
-function isImageUrl(url) {
-  // add checks for online compatibility
-  return (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
-}
-
 function isPositiveFloat(s) {
   return !isNaN(s) && Number(s) > 0;
 }
@@ -46,15 +41,11 @@ class AddProductPage extends React.Component {
     console.log(this.state);
     console.log('dates', this.datepicker.state);
     const today = new Date(); today.setHours(0, 0, 0, 0);
-  
+
     // validation checks
     if (this.state.name === "" || this.state.photo === "" ||
       this.state.price === "") {
       this.setState({ alertmsg: "Need to fill required inputs!" });
-    }
-    // check if valid image
-    else if (!isImageUrl(this.state.photo)) {
-      this.setState({ alertmsg: "Provide valid image url!" });
     }
     // date checks
     else if (this.datepicker === undefined ||
