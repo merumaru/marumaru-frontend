@@ -46,24 +46,6 @@ class ProductPage extends React.Component {
         // run a check for availability once
       },
       seller: {},
-      stats: {
-        label: "Product Views",
-        value: "182",
-        percentage: "12.4%",
-        increase: true,
-        chartLabels: [null, null, null, null, null, null, null],
-        attrs: { md: "6", sm: "6" },
-        datasets: [
-          {
-            label: "Today",
-            fill: "start",
-            borderWidth: 1.5,
-            backgroundColor: "rgba(23,198,113,0.1)",
-            borderColor: "rgb(23,198,113)",
-            data: [1, 2, 3, 3, 3, 4, 4]
-          }
-        ]
-      },
       estimate: "",
       productID: this.props.match.params.id || this.props.location.pathname.split("/")[2],
       alertmsg: "",
@@ -166,9 +148,6 @@ class ProductPage extends React.Component {
               <CardBody style={{fontWeight: "700", fontSize: "1.5rem", textAlign: "center"}}>
                 円 {product.price} <span style={{fontSize: "1rem"}}>/ day</span>
                 {/* ¥ */}
-                <span style={{float: "right", fontSize: "small"}}>
-                  <StarIcon color="primary"/><StarIcon color="primary"/><StarIcon color="primary"/><StarHalfIcon color="primary"/><StarBorderIcon color="primary"/>
-                  </span>
               </CardBody>
             </Card>
           </Col>
@@ -232,43 +211,8 @@ class ProductPage extends React.Component {
                 <ListGroupItem>
                   <Row>
                     {/* Representative views interest graph */}
-                    <Col lg="5">
-                      <SmallStats
-                        id={`interest`}
-                        variation="1"
-                        chartData={stats.datasets}
-                        chartLabels={stats.chartLabels}
-                        label={stats.label}
-                        value={stats.value}
-                        percentage={stats.percentage}
-                        increase={stats.increase}
-                        decrease={stats.decrease}
-                      />
-                    </Col>
 
                     {/*  Seller info*/}
-                    <Col lg="7">
-                      <Card className="card-post card-post--aside card-post--1">
-                        <a href={"/users/" + seller.ID} className="text-fiord-blue">
-                          <div
-                            className="card-post__image"
-                            style={{ backgroundImage: `url('${seller.avatar}')`, height: "20px !important", maxWidth: "140px !important" }}
-                          >
-                          </div>
-                        </a>
-                        <CardBody>
-                          <span className="text-muted">Seller</span>
-                          <h5 className="card-title">
-                            <a className="text-fiord-blue" href={"/user/" + seller.ID}>
-                              {seller.username}
-
-                              <br />
-                              <span className="text-muted"><RoomIcon />: {seller.address}</span>
-                            </a>
-                          </h5>
-                        </CardBody>
-                      </Card>
-                    </Col>
                   </Row>
                 </ListGroupItem>
               </ListGroup>
