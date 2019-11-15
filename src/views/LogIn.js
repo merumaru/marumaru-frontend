@@ -80,7 +80,7 @@ export default function LogInPage() {
       .catch(function (error) {
         message = error.response.data;
         document.getElementById("alertmsg").innerHTML = message;
-        console.log(error.response.data);
+        console.error(error.response.data);
       });
   }
 

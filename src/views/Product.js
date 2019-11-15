@@ -100,14 +100,14 @@ class ProductPage extends React.Component {
         timeduration: timeduration
       })
         .then((response) => {
-          console.log(response.data);
+          console.error(response.data);
           this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
           setTimeout(() => {
             this.props.history.push("/users")
           }, 2500);
         })
         .catch((error) => {
-          console.log(error.response);
+          console.error(error.response);
           this.setState({ alertmsg: error.response.data.message });
         });
     }

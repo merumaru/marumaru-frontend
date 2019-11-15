@@ -33,7 +33,7 @@ export default class UserActions extends React.Component {
         console.log('username ', response.data.username);
         this.setState({ user: response.data });
       })
-      .catch(function (error) { console.log(error); })
+      .catch(function (error) { console.error(error); })
   }
 
   componentDidMount() {

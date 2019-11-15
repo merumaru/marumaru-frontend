@@ -35,7 +35,7 @@ class HomePage extends React.Component {
         console.log('Populating products', response.data[0]);
         this.setState({ PostsList: response.data });
       })
-      .catch(function (error) { console.log(error.response); })
+      .catch(function (error) { console.error(error.response); })
   }
 
   componentDidMount() {

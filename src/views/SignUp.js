@@ -85,14 +85,14 @@ export default function SignUpPage() {
             window.location = "/home";
           })
           .catch(function (err) {
-            console.log('Signed up but error');
-            console.log(err);
+            console.error('Signed up but error');
+            console.error(err);
           });
       })
       .catch(function (error) {
         message = error.response.data;
         document.getElementById("alertmsg").innerHTML = message;
-        console.log(error.response.data);
+        console.error(error.response.data);
       });
   }
 

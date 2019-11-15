@@ -49,17 +49,17 @@ class AddProductPage extends React.Component {
     }
     // date checks
     else if (this.datepicker === undefined ||
-      this.datepicker.state.startDate === undefined || this.datepicker.state.endDate === undefined) {
+      this.datepicker.state.startDate === undefined ||
+      this.datepicker.state.endDate === undefined) {
       this.setState({ alertmsg: "Choose valid dates !"});
     }
     else if(this.datepicker.state.startDate  > this.datepicker.state.endDate) {
       this.setState({ alertmsg: "Start date must be before end date!"});
     }
     else if(this.datepicker.state.startDate < today ||
-        this.datepicker.state.endDate < today) {
-          this.setState({ alertmsg: "Dates cannot be before today!"});
-        }
-
+      this.datepicker.state.endDate < today) {
+      this.setState({ alertmsg: "Dates cannot be before today!"});
+    }
     // price check
     else if(!isPositiveFloat(this.state.price)) {
       this.setState({ alertmsg: "Price needs to be a positive number!"});
@@ -78,17 +78,17 @@ class AddProductPage extends React.Component {
         timeduration: timeduration,
         price: Number(this.state.price)
       })
-        .then((response) => {
-          console.log(response.data);
-          this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
-          setTimeout(() => {
-            this.props.history.push("/products/" + response.data.info)
-          }, 2500);
-        })
-        .catch((error) => {
-          console.log(error.response);
-          this.setState({ alertmsg: error.response.data.message });
-        });
+      .then((response) => {
+        console.log(response.data);
+        this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
+        setTimeout(() => {
+          this.props.history.push("/products/" + response.data.info)
+        }, 2500);
+      })
+      .catch((error) => {
+        console.error(error.response);
+        this.setState({ alertmsg: error.response.data.message });
+      });
     }
   }
 
@@ -98,7 +98,6 @@ class AddProductPage extends React.Component {
   }
 
   render() {
-
     return (
       <Container fluid className="main-content-container px-4">
         {this.state.alertmsg && <Alert className="mb-0" id="alertmsg">{this.state.alertmsg}</Alert>}
@@ -111,20 +110,10 @@ class AddProductPage extends React.Component {
           <Col lg="10">
             <Card>
               <CardBody>
-                {/* Description and availability */}
                 <Row>
                   <Col>
                     <Form>
                       <Row>
-                        {/* <Col md="4">
-                          <div className="custom-file mb-3" style={{float:"left"}}>
-                            <input type="file" className="custom-file-input" id="photoFile" />
-                            <label className="custom-file-label" htmlFor="photoFile">Choose file...</label>
-                          </div>
-                        </Col>
-                        <Col md="2">
-                        <Button type="submit" style={{ float: "left" }}>Upload !</Button>
-                        </Col> */}
                         <Col md="6" className="form-group">
                           <label htmlFor="name">Name * (required)</label>
                           <FormInput
@@ -181,14 +170,13 @@ class AddProductPage extends React.Component {
                             id="price" name="price"
                             required
                             onChange={this.onChange}
-                            placeholder="¥ 99.9"
+                            placeholder="99.9"
                           />
                         </Col>
                       </Row>
                     </Form>
                   </Col>
                 </Row>
-
               </CardBody>
             </Card>
           </Col>

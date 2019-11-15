@@ -122,7 +122,7 @@ class UserProfile extends React.Component {
                     //   console.log('Orderproducts', this.state.orderproducts);
                     // }
                   })
-                  .catch(function (error) { console.log('products fet', error.response); })
+                  .catch(function (error) { console.error('products fet', error.response); })
               );
 
               this.setState({ orderproducts: orderproducts });
@@ -141,7 +141,7 @@ class UserProfile extends React.Component {
           this.setState({ products: response.data });
         }
       })
-      .catch(function (error) { console.log('products fet', error.response); });
+      .catch(function (error) { console.error('products fet', error.response); });
 
   }
 
