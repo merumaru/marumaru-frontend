@@ -24,32 +24,7 @@ class HomePage extends React.Component {
       ],
 
       // Seller list
-      SellerList: [
-        {
-          backgroundImage: require("../images/content-management/5.jpeg"),
-          category: "Travel",
-          categoryTheme: "info",
-          author: "Anna Ken",
-          authorAvatar: require("../images/avatars/0.jpg"),
-          title:
-            "Attention he extremity unwilling on otherwise cars backwards yet",
-          body:
-            "Conviction up partiality as delightful is discovered. Yet jennings resolved disposed exertion you off. Left did fond drew fat head poor jet pan flying over...",
-          date: "29 February 2019"
-        },
-        {
-          backgroundImage: require("../images/content-management/6.jpeg"),
-          category: "Business",
-          categoryTheme: "dark",
-          author: "John James",
-          authorAvatar: require("../images/avatars/1.jpg"),
-          title:
-            "Totally words widow one downs few age every seven if miss part by fact",
-          body:
-            "Discovered had get considered projection who favourable. Necessary up knowledge it tolerably. Unwilling departure education to admitted speaking...",
-          date: "29 February 2019"
-        }
-      ],
+      SellerList: [],
 
     };
   }

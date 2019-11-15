@@ -181,9 +181,6 @@ class UserProfile extends React.Component {
                   <EmailIcon />: {user.email}
                 </ListGroupItem>
                 <ListGroupItem className="px-4">
-                  <RoomIcon />: {user.address}
-                </ListGroupItem>
-                <ListGroupItem className="px-4">
                   <PhoneIcon />: {user.phonenumber}
                 </ListGroupItem>
               </ListGroup>
