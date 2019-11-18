@@ -69,26 +69,39 @@ class AddProductPage extends React.Component {
       console.log('Attempting to make product');
       var timeduration = {Start: this.datepicker.state.startDate, End: this.datepicker.state.endDate};
 
-      axios.post(API_URL + '/products', {
-        userID: localStorage.getItem('userID'),
-        name: this.state.name,
-        photos: [this.state.photo],
-        tags: this.state.tags.split(","),
-        description: this.state.description,
-        timeduration: timeduration,
-        price: Number(this.state.price)
-      })
-      .then((response) => {
-        console.log(response.data);
-        this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
-        setTimeout(() => {
-          this.props.history.push("/products/" + response.data.info)
-        }, 2500);
-      })
-      .catch((error) => {
-        console.error(error.response);
-        this.setState({ alertmsg: error.response.data.message });
-      });
+      axios(API_URL + '/products', {
+        method: "post",
+        withCredentials: true,
+        data: {
+          name: this.state.name,
+          photos: [this.state.photo],
+          tags: this.state.tags.split(","),
+          description: this.state.description,
+          timeduration: timeduration,
+          price: Number(this.state.price)
+      }})
+        .then((response) => {
+          if (response.data != null) {
+            console.log(response.data);
+            this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
+            setTimeout(() => {
+              this.props.history.push("/products/" + response.data.info)
+            }, 2500);
+          }
+        })
+        .catch((error) => {
+          console.log("Error in doing post request" + error.response);
+          if(error.response !== undefined) {
+            if(error.response.status == 401) {
+              this.setState({ alertmsg: "User is not logged in."});
+              setTimeout(function () {
+                window.location = "/login";
+              }, 500);
+            } else {
+              this.setState({ alertmsg: "Error happened in adding product : " + error.response.data.message});
+            }
+          }
+        });
     }
   }
 

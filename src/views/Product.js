@@ -43,7 +43,6 @@ class ProductPage extends React.Component {
         timeduration: { Start: "", End: "" },
         userID: ""
       },
-      seller: {},
       estimate: "",
       productID: this.props.match.params.id || this.props.location.pathname.split("/")[2],
       alertmsg: "",
@@ -55,19 +54,27 @@ class ProductPage extends React.Component {
   }
 
   getProductAndSeller() {
-    axios.get(API_URL + '/products/' + this.state.productID)
+    axios.get(API_URL + '/products/' + this.state.productID, { withCredentials: true })
       .then((response) => {
-        console.log('response', response);
-        this.setState({ product: response.data });
-        this.setState({ estimate: this.state.product.price});
-        axios.get(API_URL + '/users/' + this.state.product.userID)
-        .then((response) => {
-          console.log('Seller', response.data);
-          this.setState({ seller: response.data });
-        })
-        .catch(function (error) { console.log(error); })
+        if (response.data != null) {
+          console.log('response', response);
+          this.setState({ product: response.data });
+          this.setState({ estimate: this.state.product.price});
+        }
       })
-      .catch(function (error) { console.log(error.response); });
+      .catch((error) => {
+        console.log("Error in doing post request" + error.response);
+        if(error.response !== undefined) {
+          if(error.response.status == 401) {
+            this.setState({ alertmsg: "User is not logged in."});
+            setTimeout(function () {
+              window.location = "/login";
+            }, 500);
+          } else {
+            this.setState({ alertmsg: "Error happened in fetching product : " + error.response.data.message});
+          }
+        }
+      });
   }
 
   componentDidMount() {
@@ -83,38 +90,44 @@ class ProductPage extends React.Component {
     event.preventDefault();
     console.log('datepicker', this.datepicker);
     var timeduration = {Start: this.datepicker.state.startDate, End: this.datepicker.state.endDate};
-    var buyerID = localStorage.getItem('userID');
     var sellerID = this.state.product.userID;
     var productID = this.state.productID;
-    if (buyerID === sellerID) {
-      this.setState({ alertmsg: "Cannot buy your own product !"});
-    }
-    else {
-      axios.post(API_URL + '/orders', {
+    axios(API_URL + '/orders', {
+      method: "post",
+      withCredentials: true,
+      data: {
         productID: productID,
         sellerID: sellerID,
-        buyerID: buyerID,
         timeduration: timeduration
-      })
-        .then((response) => {
-          console.error(response.data);
+      }
+    })
+      .then((response) => {
+        if (response.data != null) {
+          console.log(response.data);
           this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
           setTimeout(() => {
             this.props.history.push("/users")
           }, 2500);
-        })
-        .catch((error) => {
-          console.error(error.response);
-          this.setState({ alertmsg: error.response.data.message });
-        });
-    }
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        if(error.response !== undefined) {
+          if(error.response.status == 401) {
+            this.setState({ alertmsg: "User is not logged in."});
+            setTimeout(function () {
+              window.location = "/login";
+            }, 500);
+          } else {
+            this.setState({ alertmsg: "Error happened in renting product : " + error.response.data.message});
+          }
+        }
+      });
   }
 
   render() {
     const {
       product,
-      seller,
-      stats,
       alertmsg
     } = this.state;
 

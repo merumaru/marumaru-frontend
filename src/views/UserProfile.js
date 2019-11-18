@@ -15,6 +15,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import StorefrontIcon from '@material-ui/icons/Storefront';
 import axios from "axios";
 import { API_URL } from "../config";
+import Cookies from 'universal-cookie';
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var today = new Date();
@@ -77,19 +78,25 @@ class UserProfile extends React.Component {
       orderproducts: [],
       userID: this.props.match.params.id || localStorage.getItem("userID")
     };
-  }
 
+    const cookies = new Cookies();
+    var token = cookies.get('token');
+    var jwt = require("jsonwebtoken");
+    var decode = jwt.decode(token);
+    this.state.userID = decode.id;
+    this.state.userName = decode.username;
+  }
 
   getUserProfile() {
 
     console.log('Fetching information for id', this.state.userID);
-    axios.get(API_URL + '/users/' + this.state.userID)
+    axios.get(API_URL + '/users/' + this.state.userID, { withCredentials: true })
       .then((response) => {
         console.log('user info', response);
         this.setState({ user: response.data });
 
         // get orders with user involved
-        axios.get(API_URL + '/users/' + this.state.userID + '/orders')
+        axios.get(API_URL + '/users/' + this.state.userName + "/orders", { withCredentials: true })
           .then((response) => {
             console.log('Populating orders for', this.state.userID, response.data);
             if (response.data) {
@@ -99,7 +106,7 @@ class UserProfile extends React.Component {
               var orderproducts = [];
               var length = this.state.orders.length;
               this.state.orders.map((order, key) =>
-                axios.get(API_URL + '/products/' + order.productID)
+                axios.get(API_URL + '/products/' + order.productID, { withCredentials: true })
                   .then((resp) => {
                     console.log('Product received', resp.data);
                     length--;
@@ -127,7 +134,7 @@ class UserProfile extends React.Component {
 
 
     // get user products
-    axios.get(API_URL + '/users/' + this.state.userID + '/products')
+    axios.get(API_URL + '/users/' + this.state.userName + "/products", { withCredentials: true })
       .then((response) => {
         console.log('Products', response.data);
         if (response.data) {
