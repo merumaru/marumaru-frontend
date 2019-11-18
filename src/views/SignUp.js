@@ -9,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
+import Cookies from 'universal-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import { API_URL } from "../config";
 import axios from "axios";
@@ -65,7 +66,7 @@ export default function SignUpPage() {
     event.preventDefault();
     const data = new FormData(event.target);
 
-    axios.post(API_URL + '/users/signup', {
+    axios.post(API_URL + '/signup', {
       username: data.get('username'),
       email: data.get('email'),
       address: data.get('address'),
@@ -74,25 +75,25 @@ export default function SignUpPage() {
     })
       .then(function (response) {
         console.log(response.headers);
-        axios.post(API_URL + '/users/login', {
+        axios.post(API_URL + '/login', {
           username: data.get('username'),
           password: data.get('password')
         })
-          .then(function (resp) {
+          .then(function (response) {
             console.log('Logged in');
-            console.log(resp);
-            localStorage.setItem("userID", resp.data.info);
+            const cookies = new Cookies();
+            cookies.set('token', response.data.token, { path: '/' });
             window.location = "/home";
           })
           .catch(function (err) {
-            console.log('Signed up but error');
-            console.log(err);
+            console.error('Signed up but error');
+            console.error(err);
           });
       })
       .catch(function (error) {
         message = error.response.data;
         document.getElementById("alertmsg").innerHTML = message;
-        console.log(error.response.data);
+        console.error(error.response.data);
       });
   }
 

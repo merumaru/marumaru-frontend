@@ -25,7 +25,7 @@ const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", 
 
 function getReadableDate(isoDate) {
   var date = new Date(isoDate);
-  return date.getDate()+' ' + months[date.getMonth()] + ' '+date.getFullYear();//prints expected format.
+  return date.getDate()+' ' + months[date.getMonth()] + ' '+date.getFullYear(); // prints expected format.
 };
 
 class ProductPage extends React.Component {
@@ -34,18 +34,15 @@ class ProductPage extends React.Component {
 
     this.state = {
       product: {
-        ID: "-1",
-        name: "Marimekko Puketti Tote Bag",
-        photos: ['https://static.mercdn.net/item/detail/orig/photos/m58195644191_1.jpg?1573368650'],
-        description: "It is a tote bag purchased 4-5 years ago. It is a bag that was used only for going to yoga for about half a year. Vertical 32 ㎝ Horizontal 44 ㎝ Town width 13 フ ァ ス ナ ー Opening fastener One inside pocket for half a year, and then purchase it with a person who understands that it was stored at home. I will ship as compact as possible. Please acknowledge m (_ _) m. I will change the amount of money while watching the situation.",
-        price: 123.45,
-        tags: ["Bags", "Fashion"],
-        timeduration: { Start: "2019-11-03T08:04:33+0900", End: "2019-11-30T17:03:30+0900" },
-        userID: "-1",
-        // https://timestampgenerator.com/1572562929/+09:00
-        // run a check for availability once
+        ID: "",
+        name: "",
+        photos: [''],
+        description: "",
+        price: 0,
+        tags: [],
+        timeduration: { Start: "", End: "" },
+        userID: ""
       },
-      seller: {},
       estimate: "",
       productID: this.props.match.params.id || this.props.location.pathname.split("/")[2],
       alertmsg: "",
@@ -57,21 +54,28 @@ class ProductPage extends React.Component {
   }
 
   getProductAndSeller() {
-    axios.get(API_URL + '/products/' + this.state.productID)
+    axios.get(API_URL + '/products/' + this.state.productID, { withCredentials: true })
       .then((response) => {
-        console.log('response', response);
-        this.setState({ product: response.data });
-        this.setState({ estimate: this.state.product.price});
-        axios.get(API_URL + '/users/user/' + this.state.product.userID)
-        .then((response) => {
-          console.log('Seller', response.data);
-          this.setState({ seller: response.data });
-        })
-        .catch(function (error) { console.log(error); })
+        if (response.data != null) {
+          console.log('response', response);
+          this.setState({ product: response.data });
+          this.setState({ estimate: this.state.product.price});
+        }
       })
-      .catch(function (error) { console.log(error.response); })
-
-}
+      .catch((error) => {
+        console.log("Error in doing post request" + error.response);
+        if(error.response !== undefined) {
+          if(error.response.status == 401) {
+            this.setState({ alertmsg: "User is not logged in."});
+            setTimeout(function () {
+              window.location = "/login";
+            }, 500);
+          } else {
+            this.setState({ alertmsg: "Error happened in fetching product : " + error.response.data.message});
+          }
+        }
+      });
+  }
 
   componentDidMount() {
     this.getProductAndSeller();
@@ -86,38 +90,44 @@ class ProductPage extends React.Component {
     event.preventDefault();
     console.log('datepicker', this.datepicker);
     var timeduration = {Start: this.datepicker.state.startDate, End: this.datepicker.state.endDate};
-    var buyerID = localStorage.getItem('userID');
     var sellerID = this.state.product.userID;
     var productID = this.state.productID;
-    if (buyerID === sellerID) {
-      this.setState({ alertmsg: "Cannot buy your own product !"});
-    }
-    else {
-      axios.post(API_URL + '/orders', {
+    axios(API_URL + '/orders', {
+      method: "post",
+      withCredentials: true,
+      data: {
         productID: productID,
         sellerID: sellerID,
-        buyerID: buyerID,
         timeduration: timeduration
-      })
-        .then((response) => {
+      }
+    })
+      .then((response) => {
+        if (response.data != null) {
           console.log(response.data);
           this.setState({ alertmsg: response.data.message + ' Redirecting in a while ...' });
           setTimeout(() => {
             this.props.history.push("/users")
           }, 2500);
-        })
-        .catch((error) => {
-          console.log(error.response);
-          this.setState({ alertmsg: error.response.data.message });
-        });
-    }
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        if(error.response !== undefined) {
+          if(error.response.status == 401) {
+            this.setState({ alertmsg: "User is not logged in."});
+            setTimeout(function () {
+              window.location = "/login";
+            }, 500);
+          } else {
+            this.setState({ alertmsg: "Error happened in renting product : " + error.response.data.message});
+          }
+        }
+      });
   }
 
   render() {
     const {
       product,
-      seller,
-      stats,
       alertmsg
     } = this.state;
 
@@ -183,7 +193,7 @@ class ProductPage extends React.Component {
                   {/* Edit button only visible to seller */}
                   {/* <Button theme="accent">Update Account</Button> */}
                 </ListGroupItem>
-                
+
                 {/* Buying options */}
                 <ListGroupItem>
                   <Row>

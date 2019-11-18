@@ -11,6 +11,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
+import Cookies from 'universal-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import { API_URL } from "../config";
 import axios from "axios";
@@ -66,21 +67,20 @@ export default function LogInPage() {
     event.preventDefault();
     const data = new FormData(event.target);
     console.log(data.get('username'), data.get('password'));
-    axios.post(API_URL + '/users/login', {
+    axios.post(API_URL + '/login', {
       username: data.get('username'),
-      password: data.get('password'),
-      withCredentials: true
+      password: data.get('password')
     })
       .then(function (response) {
         console.log('Login successful');
-        console.log(response);
-        localStorage.setItem("userID", response.data.info);
+        const cookies = new Cookies();
+        cookies.set('token', response.data.token, { path: '/' });
         window.location = "/home";
       })
       .catch(function (error) {
         message = error.response.data;
         document.getElementById("alertmsg").innerHTML = message;
-        console.log(error.response.data);
+        console.error(error.response.data);
       });
   }
 
@@ -119,10 +119,6 @@ export default function LogInPage() {
               type="password"
               id="password"
               autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
             />
             <Button
               type="submit"

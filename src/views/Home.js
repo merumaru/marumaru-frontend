@@ -8,6 +8,7 @@ import {
   Card,
   CardBody,
   Badge,
+  Alert
 } from "shards-react";
 import axios from "axios";
 import { API_URL } from "../config";
@@ -30,12 +31,27 @@ class HomePage extends React.Component {
   }
 
   getAllProducts() {
-    axios.get(API_URL + '/products')
+    axios.get(API_URL + '/products', { withCredentials: true })
       .then((response) => {
-        console.log('Populating products', response.data[0]);
-        this.setState({ PostsList: response.data });
+        if (response.data != null) {
+          console.log('Populating products', response.data);
+          this.setState({ PostsList: response.data });  
+        }
       })
-      .catch(function (error) { console.log(error.response); })
+      .catch((error) => {
+        console.log("Error in doing get request" + error.response);
+        if(error.response !== undefined) {
+          if(error.response.status == 401) {
+            console.log("Error in doing get request" + error.response.data.message);
+            this.setState({ alertmsg: "User is not logged in."});
+            setTimeout(function () {
+              window.location = "/login";
+            }, 500);
+          } else {
+            this.setState({ alertmsg: "Error happened in fetching products : " + error.response.data.message});
+          }
+        }
+      });
   }
 
   componentDidMount() {
@@ -50,6 +66,8 @@ class HomePage extends React.Component {
 
     return (
       <Container fluid className="main-content-container px-4">
+        {this.state.alertmsg && <Alert className="mb-0" id="alertmsg">{this.state.alertmsg}</Alert>}
+
         {/* Page Header */}
         <Row noGutters className="page-header py-4">
           <PageTitle sm="4" title="Products you might be interested in" subtitle="Home" className="text-sm-left" />
@@ -77,7 +95,6 @@ class HomePage extends React.Component {
                     <div className="card-post__author d-flex">
                       <a href={"/users/" + post.userID}
                         className="card-post__author-avatar card-post__author-avatar--small"
-                        style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLrQHtPebM6OmkYCp6kyp1nHURBXZKee55KS6s96-dF8HRsdJIZQ&s')` }}
                       >
                       </a>
                     </div>
