@@ -65,7 +65,7 @@ export default function SignUpPage() {
     event.preventDefault();
     const data = new FormData(event.target);
 
-    axios.post(API_URL + '/users/signup', {
+    axios.post(API_URL + '/signup', {
       username: data.get('username'),
       email: data.get('email'),
       address: data.get('address'),
@@ -74,7 +74,7 @@ export default function SignUpPage() {
     })
       .then(function (response) {
         console.log(response.headers);
-        axios.post(API_URL + '/users/login', {
+        axios.post(API_URL + '/login', {
           username: data.get('username'),
           password: data.get('password')
         })
@@ -85,14 +85,14 @@ export default function SignUpPage() {
             window.location = "/home";
           })
           .catch(function (err) {
-            console.log('Signed up but error');
-            console.log(err);
+            console.error('Signed up but error');
+            console.error(err);
           });
       })
       .catch(function (error) {
         message = error.response.data;
         document.getElementById("alertmsg").innerHTML = message;
-        console.log(error.response.data);
+        console.error(error.response.data);
       });
   }
 
