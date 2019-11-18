@@ -67,7 +67,7 @@ export default function LogInPage() {
     event.preventDefault();
     const data = new FormData(event.target);
     console.log(data.get('username'), data.get('password'));
-    axios.post(API_URL + '/users/login', {
+    axios.post(API_URL + '/login', {
       username: data.get('username'),
       password: data.get('password')
     })
@@ -80,7 +80,7 @@ export default function LogInPage() {
       .catch(function (error) {
         message = error.response.data;
         document.getElementById("alertmsg").innerHTML = message;
-        console.log(error.response.data);
+        console.error(error.response.data);
       });
   }
 
