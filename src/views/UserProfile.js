@@ -18,18 +18,11 @@ import { API_URL } from "../config";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var today = new Date();
-var defaultOrders = [{
-  ID: "99",
-  SellerID: "1",
-  BuyerID: "2",
-  ProductID: "3",
-  TimeDuration: { Start: "2019-11-03T08:04:33+0900", End: "2019-11-30T17:03:30+0900" },
-  isCancelled: false
-}];
+var defaultOrders = [];
 
 function getReadableDate(isoDate) {
   var date = new Date(isoDate);
-  return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();//prints expected format.
+  return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear(); // prints expected format.
 };
 
 function getOrderStatus(order) {
@@ -71,12 +64,12 @@ class UserProfile extends React.Component {
 
     this.state = {
       user: {
-        name: "Stan Lee",
-        ID: "1",
-        address: "In your heart",
-        email: "stantheman@gmail.com",
-        phonenumber: "911",
-        avatar: 'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/stan-lee-arrives-at-the-premiere-of-disney-and-marvels-news-photo-950501274-1542049801.jpg?crop=1.00xw:0.512xh;0,0.0630xh&resize=480:*'
+        name: "",
+        ID: "",
+        address: "",
+        email: "",
+        phonenumber: "",
+        avatar: ''
       },
       products: [
       ],
