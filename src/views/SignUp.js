@@ -9,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
+import Cookies from 'universal-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import { API_URL } from "../config";
 import axios from "axios";
@@ -80,8 +81,8 @@ export default function SignUpPage() {
         })
           .then(function (resp) {
             console.log('Logged in');
-            console.log(resp);
-            localStorage.setItem("userID", resp.data.info);
+            const cookies = new Cookies();
+            cookies.set('token', response.data.token, { path: '/' });
             window.location = "/home";
           })
           .catch(function (err) {
