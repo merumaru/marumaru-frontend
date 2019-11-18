@@ -77,7 +77,6 @@ class HomePage extends React.Component {
                     <div className="card-post__author d-flex">
                       <a href={"/users/" + post.userID}
                         className="card-post__author-avatar card-post__author-avatar--small"
-                        style={{ backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLrQHtPebM6OmkYCp6kyp1nHURBXZKee55KS6s96-dF8HRsdJIZQ&s')` }}
                       >
                       </a>
                     </div>
