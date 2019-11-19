@@ -93,6 +93,7 @@ class UserProfile extends React.Component {
   }
 
   getUserProfile() {
+    var that = this;
     console.log('Fetching information for id', this.state.userID);
 
     axios.get(API_URL + '/users/' + this.state.userID, { withCredentials: true })
@@ -124,8 +125,8 @@ class UserProfile extends React.Component {
                     orderproducts.push(resp.data);
                   }
                   if(index == length-1) {
-                    this.setState({ orderproducts: orderproducts });
-                    console.log("inside finished then")
+                    console.log("inside finished then", that, orderproducts)
+                    that.setState({ orderproducts: orderproducts });
                     isFinished = true
                   }
                 }).bind(this)
@@ -264,7 +265,6 @@ class UserProfile extends React.Component {
                     <Col lg="2">Status</Col>
                   </Row>
                 </ListGroupItem>
-                <ListGroupItem>{orderproducts}</ListGroupItem>
                 {orderproducts.map((product) => <ListGroupItem>
                   <Row>
 
@@ -275,7 +275,7 @@ class UserProfile extends React.Component {
                     </Col>
                     <Col lg="5">
                       <a href={"/products/" + product.ID}>
-                        {product.name} NAME
+                        {product.name} 
                         </a>
                     </Col>
                     <Col lg="3">
