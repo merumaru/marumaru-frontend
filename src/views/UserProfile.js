@@ -7,6 +7,7 @@ import {
   Badge,
 } from "shards-react";
 
+import  { Redirect } from 'react-router-dom'
 import PageTitle from "../components/common/PageTitle";
 import EmailIcon from '@material-ui/icons/Email';
 import RoomIcon from '@material-ui/icons/Room';
@@ -83,13 +84,13 @@ class UserProfile extends React.Component {
     var token = cookies.get('token');
     var jwt = require("jsonwebtoken");
     var decode = jwt.decode(token);
-    this.state.userID = decode.id;
-    this.state.userName = decode.username;
+    this.state.userID = decode === null ? null : decode.id;
+    this.state.userName = decode === null ? null : decode.username;
   }
 
   getUserProfile() {
-
     console.log('Fetching information for id', this.state.userID);
+
     axios.get(API_URL + '/users/' + this.state.userID, { withCredentials: true })
       .then((response) => {
         console.log('user info', response);
@@ -165,6 +166,10 @@ class UserProfile extends React.Component {
       orders,
       orderproducts
     } = this.state;
+
+    if (this.state.userID === null) {
+      return <Redirect to='/login'  />
+    }
 
     return (
       <Container fluid className="main-content-container px-4">
