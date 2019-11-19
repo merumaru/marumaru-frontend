@@ -105,26 +105,35 @@ class UserProfile extends React.Component {
               // get product details
               var orderproducts = [];
               var length = this.state.orders.length;
-              this.state.orders.map((order, key) =>
-                axios.get(API_URL + '/products/' + order.productID, { withCredentials: true })
-                  .then((resp) => {
-                    console.log('Product received', resp.data);
-                    length--;
-                    if (resp.data) {
-                      orderproducts.push(resp.data);
-                      // this.setState({orderproducts: this.state.orderproducts.push(resp.data)});
-                    }
-                    else {
-                      console.log(key, ' number of order', response);
-                    }
-                    // if (length === 0) {
-                    //   this.setState({ orderproducts: orderproducts });
-                    //   console.log('Orderproducts', this.state.orderproducts);
-                    // }
-                  })
-                  .catch(function (error) { console.error('products fet', error.response); })
-              );
+              var isFinished = false
+              if(length == 0) {
+                isFinished = true
+              }
+              for (let index = 0; index < length; index++) {
+                axios.get(API_URL + '/products/' + this.state.orders[index].productID, { withCredentials: true })
+                .then((resp) => {
+                  console.log('Product received', resp.data);
+                  if (resp.data) {
+                    orderproducts.push(resp.data);
+                  }
+                  if(index == length-1) {
+                    console.log("inside finished then")
+                    isFinished = true
+                  }
+                })
+                .catch(function (error) {
+                  console.log("inside finished error")
+                  console.error('orders products not fetched', error.response);
+                  if(index == length-1) {
+                    isFinished = true
+                  }
+                })
+                console.log("Loop iteration : ", index)
+              }
 
+              //wait until loop has finished asynchronously
+              // while(isFinished == false) { }
+              console.log("finshed")
               this.setState({ orderproducts: orderproducts });
             }
           })
@@ -243,7 +252,7 @@ class UserProfile extends React.Component {
                   </Row>
                 </ListGroupItem>
                 <ListGroupItem>{orderproducts}</ListGroupItem>
-                {/* {orderproducts.map((product) => <ListGroupItem>
+                {orderproducts.map((product) => <ListGroupItem>
                   <Row>
 
                     <Col lg="2">
@@ -263,7 +272,7 @@ class UserProfile extends React.Component {
                       <Badge className={getOrderStatus(product)[1]}>{getOrderStatus(product)[0]}</Badge>
                     </Col>
                   </Row>
-                </ListGroupItem>)} */}
+                </ListGroupItem>)}
               </ListGroup>
             </Card>
           </Col>
