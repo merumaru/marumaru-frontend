@@ -78,9 +78,9 @@ export default function LogInPage() {
         window.location = "/home";
       })
       .catch(function (error) {
-        message = error.response.data;
+        message = error.response.data.message;
         document.getElementById("alertmsg").innerHTML = message;
-        console.error(error.response.data);
+        console.log(message);
       });
   }
 
