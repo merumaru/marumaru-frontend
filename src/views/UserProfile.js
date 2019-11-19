@@ -7,6 +7,7 @@ import {
   Badge,
 } from "shards-react";
 
+import  { Redirect } from 'react-router-dom'
 import PageTitle from "../components/common/PageTitle";
 import EmailIcon from '@material-ui/icons/Email';
 import RoomIcon from '@material-ui/icons/Room';
@@ -83,13 +84,18 @@ class UserProfile extends React.Component {
     var token = cookies.get('token');
     var jwt = require("jsonwebtoken");
     var decode = jwt.decode(token);
-    this.state.userID = decode.id;
-    this.state.userName = decode.username;
+    this.state.userID = decode === null ? null : decode.id;
+    this.state.userName = decode === null ? null : decode.username;
+  }
+
+  getOrderProducts(length, orders) {
+
   }
 
   getUserProfile() {
-
+    var that = this;
     console.log('Fetching information for id', this.state.userID);
+
     axios.get(API_URL + '/users/' + this.state.userID, { withCredentials: true })
       .then((response) => {
         console.log('user info', response);
@@ -105,27 +111,40 @@ class UserProfile extends React.Component {
               // get product details
               var orderproducts = [];
               var length = this.state.orders.length;
-              this.state.orders.map((order, key) =>
-                axios.get(API_URL + '/products/' + order.productID, { withCredentials: true })
-                  .then((resp) => {
-                    console.log('Product received', resp.data);
-                    length--;
-                    if (resp.data) {
-                      orderproducts.push(resp.data);
-                      // this.setState({orderproducts: this.state.orderproducts.push(resp.data)});
-                    }
-                    else {
-                      console.log(key, ' number of order', response);
-                    }
-                    // if (length === 0) {
-                    //   this.setState({ orderproducts: orderproducts });
-                    //   console.log('Orderproducts', this.state.orderproducts);
-                    // }
-                  })
-                  .catch(function (error) { console.error('products fet', error.response); })
-              );
+              var isFinished = false
+              if(length == 0) {
+                isFinished = true
+              }
 
-              this.setState({ orderproducts: orderproducts });
+              var orderproducts = [];
+              for (let index = 0; index < length; index++) {
+                axios.get(API_URL + '/products/' + this.state.orders[index].productID, { withCredentials: true })
+                .then((resp) => {
+                  console.log('Product received', resp.data);
+                  if (resp.data) {
+                    orderproducts.push(resp.data);
+                  }
+                  if(index == length-1) {
+                    console.log("inside finished then", that, orderproducts)
+                    that.setState({ orderproducts: orderproducts });
+                    isFinished = true
+                  }
+                }).bind(this)
+                .catch(function (error) {
+                  console.log("inside finished error")
+                  console.error('orders products not fetched', error.response);
+                  if(index == length-1) {
+                    console.log("inside finished catch")
+                    isFinished = true
+                  }
+                })
+                console.log("Loop iteration : ", index)
+              }
+
+              //wait until loop has finished asynchronously
+              // while(isFinished == false) { }
+              console.log("finshed")
+              // this.setState({ orderproducts: orderproducts });
             }
           })
           .catch(function (error) { console.log(error.response); })
@@ -156,6 +175,10 @@ class UserProfile extends React.Component {
       orders,
       orderproducts
     } = this.state;
+
+    if (this.state.userID === null) {
+      return <Redirect to='/login'  />
+    }
 
     return (
       <Container fluid className="main-content-container px-4">
@@ -242,8 +265,7 @@ class UserProfile extends React.Component {
                     <Col lg="2">Status</Col>
                   </Row>
                 </ListGroupItem>
-                <ListGroupItem>{orderproducts}</ListGroupItem>
-                {/* {orderproducts.map((product) => <ListGroupItem>
+                {orderproducts.map((product) => <ListGroupItem>
                   <Row>
 
                     <Col lg="2">
@@ -253,7 +275,7 @@ class UserProfile extends React.Component {
                     </Col>
                     <Col lg="5">
                       <a href={"/products/" + product.ID}>
-                        {product.name} NAME
+                        {product.name} 
                         </a>
                     </Col>
                     <Col lg="3">
@@ -263,7 +285,7 @@ class UserProfile extends React.Component {
                       <Badge className={getOrderStatus(product)[1]}>{getOrderStatus(product)[0]}</Badge>
                     </Col>
                   </Row>
-                </ListGroupItem>)} */}
+                </ListGroupItem>)}
               </ListGroup>
             </Card>
           </Col>
