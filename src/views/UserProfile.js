@@ -87,6 +87,10 @@ class UserProfile extends React.Component {
     this.state.userName = decode.username;
   }
 
+  getOrderProducts(length, orders) {
+
+  }
+
   getUserProfile() {
 
     console.log('Fetching information for id', this.state.userID);
@@ -109,6 +113,8 @@ class UserProfile extends React.Component {
               if(length == 0) {
                 isFinished = true
               }
+
+              var orderproducts = [];
               for (let index = 0; index < length; index++) {
                 axios.get(API_URL + '/products/' + this.state.orders[index].productID, { withCredentials: true })
                 .then((resp) => {
@@ -117,14 +123,16 @@ class UserProfile extends React.Component {
                     orderproducts.push(resp.data);
                   }
                   if(index == length-1) {
+                    this.setState({ orderproducts: orderproducts });
                     console.log("inside finished then")
                     isFinished = true
                   }
-                })
+                }).bind(this)
                 .catch(function (error) {
                   console.log("inside finished error")
                   console.error('orders products not fetched', error.response);
                   if(index == length-1) {
+                    console.log("inside finished catch")
                     isFinished = true
                   }
                 })
@@ -134,7 +142,7 @@ class UserProfile extends React.Component {
               //wait until loop has finished asynchronously
               // while(isFinished == false) { }
               console.log("finshed")
-              this.setState({ orderproducts: orderproducts });
+              // this.setState({ orderproducts: orderproducts });
             }
           })
           .catch(function (error) { console.log(error.response); })
